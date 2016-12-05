@@ -1,0 +1,28 @@
+---
+- name: Main playbook for Gluster deployment
+  hosts: all
+  tasks:
+    - name: Add required subscriptions
+      shell:
+        cmd: subscription-manager repos --enable=rh-gluster-3-for-rhel-7-server-rpms
+
+    - name: Install required packages
+      yum:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - heketi-client
+        - heketi-templates
+
+    - name: Modify IPTABLES to add required ports
+      iptables:
+        chain: OS_FIREWALL_ALLOW
+        protocol: tcp
+        ctstate: NEW
+        destination_port: "{{ item }}"
+        policy: ACCEPT
+      with_items:
+        - 24007
+        - 24008
+        - 2222
+        - 49152:49664

@@ -26,3 +26,9 @@
         - 24008
         - 2222
         - 49152:49664
+
+    - name: Reload IPTABLES service
+      service:
+        name: iptables
+        state: reloaded
+        
